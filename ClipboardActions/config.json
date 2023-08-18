@@ -1,0 +1,26 @@
+{
+    "applications": [
+        {
+            "appName": "mpv",
+            "arguments": "{URL} --hwdec=auto",
+            "executablePath": "C:\\Users\\tech\\AppData\\Local\\Programs\\mpv\\mpv.exe",
+            "regexes": [
+                "^((?:https?:)?\\/\\/)?((?:www|m)\\.)?((?:youtube(-nocookie)?\\.com|youtu.be))(\\/(?:[\\w\\-]+\\?v=|embed\\/|v\\/)?)([\\w\\-]+)(\\S+)?$",
+                "^https://www.twitch.tv/videos/.*",
+                "^https://www\\.facebook\\.com/.+/videos/.+$"
+            ],
+            "workingDirectory": "C:\\Users\\tech\\AppData\\Local\\Programs\\mpv\\"
+        },
+        {
+            "appName": "streamlink",
+            "arguments": "{URL} best --player C:\\Users\\tech\\AppData\\Local\\Programs\\mpv\\mpv.exe",
+            "executablePath": "C:\\Users\\tech\\AppData\\Roaming\\Python\\Python311\\Scripts\\streamlink.exe",
+            "regexes": [
+                "^.*play.afreecatv.com.*$",
+                "^.*twitch.tv/\\w+$"
+            ],
+            "workingDirectory": "C:\\Users\\tech\\AppData\\Roaming\\Python\\Python311\\Scripts\\"
+        }
+    ],
+    "notifications": true
+}
