@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.25)
 
 set(CMAKE_CXX_STANDARD 20)
-set (CMAKE_SYSTEM_VERSION 10.0)
+set(CMAKE_SYSTEM_VERSION 10.0)
 set(PROJECT_NAME ClipboardActions)
 
 project(ClipboardActions VERSION 0.1.0)
