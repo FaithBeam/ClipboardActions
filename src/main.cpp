@@ -6,7 +6,7 @@
 #pragma comment(lib, "comctl32.lib")
 
 #include "framework.h"
-#include "clipboard_actions.h"
+#include "main.h"
 #include <shellapi.h>
 #include <CommCtrl.h>
 #include <WinUser.h>
@@ -134,6 +134,7 @@ BOOL init_instance(const HINSTANCE h_instance, int)
 	main_h_wnd = CreateWindowW(sz_window_class, sz_title, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, h_instance, nullptr);
 
+    auto err = GetLastError();
 	if (!main_h_wnd)
 	{
 		return FALSE;

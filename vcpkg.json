@@ -1,0 +1,10 @@
+{
+  "name" : "clipboardactions",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "c95000e1b5bb62884de08d5e952993c8bced9db6",
+  "dependencies" : [ {
+    "name" : "nlohmann-json",
+    "version>=" : "3.11.2",
+    "$comment" : "    find_package(nlohmann_json CONFIG REQUIRED)\n\n    target_link_libraries(main PRIVATE nlohmann_json::nlohmann_json)\n"
+  } ]
+}
