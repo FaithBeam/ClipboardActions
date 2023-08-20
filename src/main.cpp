@@ -2,7 +2,7 @@
 //
 
 // we need commctrl v6 for LoadIconMetric()
-#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #pragma comment(lib, "comctl32.lib")
 
 #include "framework.h"
@@ -25,8 +25,8 @@
 #define MAX_LOADSTRING 100
 
 // Global Variables:
-HINSTANCE h_inst; // current instance
-WCHAR sz_title[MAX_LOADSTRING]; // The title bar text
+HINSTANCE h_inst;					   // current instance
+WCHAR sz_title[MAX_LOADSTRING];		   // The title bar text
 WCHAR sz_window_class[MAX_LOADSTRING]; // the main window class name
 HWND main_h_wnd;
 bool checked = true;
@@ -37,18 +37,16 @@ UINT constexpr wmapp_hideflyout = WM_APP + 2;
 
 class __declspec(uuid("9D0B8B92-4E1C-488e-A1E1-2331AFCE2CB5")) app_uuid;
 
-
 // Forward declarations of functions included in this code module:
 ATOM my_register_class(HINSTANCE h_instance);
 BOOL init_instance(HINSTANCE, int);
 LRESULT CALLBACK wnd_proc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK settings(HWND, UINT, WPARAM, LPARAM);
 
-
 int APIENTRY wWinMain(_In_ const HINSTANCE hInstance,
-	_In_opt_ HINSTANCE hPrevInstance,
-	_In_ LPWSTR lpCmdLine,
-	_In_ int nCmdShow)
+					  _In_opt_ HINSTANCE hPrevInstance,
+					  _In_ LPWSTR lpCmdLine,
+					  _In_ int nCmdShow)
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
@@ -132,9 +130,8 @@ BOOL init_instance(const HINSTANCE h_instance, int)
 	h_inst = h_instance; // Store instance handle in our global variable
 
 	main_h_wnd = CreateWindowW(sz_window_class, sz_title, WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, h_instance, nullptr);
+							   CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, h_instance, nullptr);
 
-    auto err = GetLastError();
 	if (!main_h_wnd)
 	{
 		return FALSE;
@@ -173,14 +170,14 @@ void show_context_menu(const HWND h_wnd, const POINT pt)
 			SetForegroundWindow(h_wnd);
 
 			// set the notifications menu item checked or not
-			MENUITEMINFO mi = { 0 };
+			MENUITEMINFO mi = {0};
 			mi.cbSize = sizeof(MENUITEMINFO);
 			mi.fMask = MIIM_STATE;
 			mi.fState = notifications ? MF_CHECKED : MF_UNCHECKED;
 			SetMenuItemInfo(h_sub_menu, IDM_NOTIFICATIONS, FALSE, &mi);
 
 			// set the startup menu item check or not
-			mi = { 0 };
+			mi = {0};
 			mi.cbSize = sizeof(MENUITEMINFO);
 			mi.fMask = MIIM_STATE;
 			mi.fState = startup_status ? MF_CHECKED : MF_UNCHECKED;
@@ -222,8 +219,8 @@ LRESULT CALLBACK wnd_proc(const HWND h_wnd, const UINT message, const WPARAM w_p
 		if (!add_notification_icon(h_wnd))
 		{
 			MessageBox(h_wnd,
-				L"Please read the ReadMe.txt file for troubleshooting",
-				L"Error adding icon", MB_OK);
+					   L"Please read the ReadMe.txt file for troubleshooting",
+					   L"Error adding icon", MB_OK);
 			return -1;
 		}
 		break;
@@ -262,9 +259,9 @@ LRESULT CALLBACK wnd_proc(const HWND h_wnd, const UINT message, const WPARAM w_p
 		case IDM_OPEN_APP_DIRECTORY:
 		{
 			const std::basic_string<wchar_t> path = GetStringFromWindowsApi<TCHAR>(
-				[](TCHAR* buffer, const int size)
+				[](TCHAR *buffer, size_t size)
 				{
-					return GetModuleFileName(nullptr, buffer, size);
+					return GetModuleFileName(nullptr, buffer, static_cast<DWORD>(size));
 				});
 			auto base_dir = std::regex_replace(path, std::wregex(LR"(^(.*)\\\w+.exe$)"), L"$1");
 			ShellExecuteW(nullptr, L"open", base_dir.c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
@@ -278,7 +275,7 @@ LRESULT CALLBACK wnd_proc(const HWND h_wnd, const UINT message, const WPARAM w_p
 	case WM_PAINT:
 	{
 		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(h_wnd, &ps);
+		BeginPaint(h_wnd, &ps);
 		// TODO: Add any drawing code that uses hdc here...
 		EndPaint(h_wnd, &ps);
 	}
@@ -291,7 +288,7 @@ LRESULT CALLBACK wnd_proc(const HWND h_wnd, const UINT message, const WPARAM w_p
 		{
 		case WM_CONTEXTMENU:
 		{
-			POINT const pt = { LOWORD(w_param), HIWORD(w_param) };
+			POINT const pt = {LOWORD(w_param), HIWORD(w_param)};
 			show_context_menu(h_wnd, pt);
 		}
 		break;
@@ -337,7 +334,7 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 			if (wm_event == BN_CLICKED)
 			{
 				// get text from edits
-				const wchar_t* name = get_edit_text(h_dlg, IDC_NAME_EDIT);
+				const wchar_t *name = get_edit_text(h_dlg, IDC_NAME_EDIT);
 				if (wcscmp(name, L"") == 0)
 				{
 					break;
@@ -345,7 +342,8 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				std::wstring w_name(name);
 
 				// if the to be added name exists in the parsed_apps, don't add it and return
-				auto is_name_same = [w_name](parsed_application*& p) { return p->app_name == w_name; };
+				auto is_name_same = [w_name](parsed_application *&p)
+				{ return p->app_name == w_name; };
 				if (const auto it = std::ranges::find_if(parsed_apps, is_name_same); it != parsed_apps.end())
 				{
 					std::wstring wss = L"Profile " + w_name + L" already exists";
@@ -357,20 +355,19 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				const HWND h_wnd_profiles_lb = GetDlgItem(h_dlg, IDC_PROFILE_LIST);
 				ListBox_AddString(h_wnd_profiles_lb, name);
 
-				const wchar_t* path = get_edit_text(h_dlg, IDC_PATH_EDIT);
-				const wchar_t* work_dir = get_edit_text(h_dlg, IDC_WORK_DIR_EDIT);
-				const wchar_t* args = get_edit_text(h_dlg, IDC_ARGS_EDIT);
+				const wchar_t *path = get_edit_text(h_dlg, IDC_PATH_EDIT);
+				const wchar_t *work_dir = get_edit_text(h_dlg, IDC_WORK_DIR_EDIT);
+				const wchar_t *args = get_edit_text(h_dlg, IDC_ARGS_EDIT);
 
 				const auto p = new parsed_application{
-					w_name, path, work_dir, args
-				};
+					w_name, path, work_dir, args};
 
 				// get rx from regex listbox
 				const HWND h_wnd_rx_lb = GetDlgItem(h_dlg, IDC_REGEXES_LIST);
 				const LRESULT num_rx = ListBox_GetCount(h_wnd_rx_lb);
 				for (LRESULT i = 0; i < num_rx; i++)
 				{
-					const wchar_t* rx = get_listbox_item(h_wnd_rx_lb, i);
+					const wchar_t *rx = get_listbox_item(h_wnd_rx_lb, i);
 					p->regexes.emplace_back(rx);
 					p->regex_patterns.push_back(rx);
 				}
@@ -416,7 +413,7 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 
 		else if (wm_id == IDC_WORK_DIR_PICKER_BUTTON)
 		{
-			IFileDialog* pfd;
+			IFileDialog *pfd;
 			if (SUCCEEDED(CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd))))
 			{
 				DWORD dw_options;
@@ -426,10 +423,10 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				}
 				if (SUCCEEDED(pfd->Show(NULL)))
 				{
-					IShellItem* psi;
+					IShellItem *psi;
 					if (SUCCEEDED(pfd->GetResult(&psi)))
 					{
-						if (wchar_t* sz_file[1]; SUCCEEDED(psi->GetDisplayName(SIGDN_DESKTOPABSOLUTEPARSING, sz_file)))
+						if (wchar_t * sz_file[1]; SUCCEEDED(psi->GetDisplayName(SIGDN_DESKTOPABSOLUTEPARSING, sz_file)))
 						{
 							HWND work_dir_h_wnd = GetDlgItem(h_dlg, IDC_WORK_DIR_EDIT);
 							Edit_SetText(work_dir_h_wnd, sz_file[0]);
@@ -471,12 +468,12 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 		{
 			if (wm_event == LBN_SELCHANGE)
 			{
-				const wchar_t* txt = get_selected_listbox_item(h_dlg, IDC_PROFILE_LIST);
+				const wchar_t *txt = get_selected_listbox_item(h_dlg, IDC_PROFILE_LIST);
 				if (txt == nullptr)
 				{
 					break;
 				}
-				const parsed_application* profile = get_profile(txt);
+				const parsed_application *profile = get_profile(txt);
 				// aren't I supposed to delete this? Get heap exception here.
 				// delete[] txt;
 
@@ -499,7 +496,7 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				// update full command edit
 				Edit_SetText(GetDlgItem(h_dlg, IDC_COMMAND_EDIT), profile->get_full_args().c_str());
 
-				//Button_SetCheck(GetDlgItem(h_dlg, IDC_APP_PATH_FIRST_CHECK), profile->include_app_path_in_args);
+				// Button_SetCheck(GetDlgItem(h_dlg, IDC_APP_PATH_FIRST_CHECK), profile->include_app_path_in_args);
 			}
 		}
 
@@ -549,7 +546,7 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				}
 
 				const HWND rx_edit_h_wnd = GetDlgItem(h_dlg, IDC_REGEX_EDIT);
-				const LRESULT len = Edit_GetTextLength(rx_edit_h_wnd);
+				const int len = Edit_GetTextLength(rx_edit_h_wnd);
 				if (len < 1)
 				{
 					break;
@@ -570,8 +567,8 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 						std::wstringstream wss;
 						wss << L"Regex " << txt << " already exists";
 						MessageBox(h_dlg,
-							wss.str().c_str(),
-							L"Error adding regex", MB_OK);
+								   wss.str().c_str(),
+								   L"Error adding regex", MB_OK);
 						return FALSE;
 					}
 				}

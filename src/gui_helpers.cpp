@@ -5,7 +5,7 @@
  * \param wc_name The name of the profile to find
  * \return The profile
  */
-parsed_application* get_profile(const wchar_t* wc_name)
+parsed_application *get_profile(const wchar_t *wc_name)
 {
 	const std::wstring w_name(wc_name);
 
@@ -20,7 +20,7 @@ parsed_application* get_profile(const wchar_t* wc_name)
 	return {};
 }
 
-parsed_application* get_current_selected_profile(HWND h_dlg, int id)
+parsed_application *get_current_selected_profile(HWND h_dlg, int id)
 {
 	HWND profiles_lb_h_wnd = GetDlgItem(h_dlg, id);
 	int profile_idx = ListBox_GetCurSel(profiles_lb_h_wnd);
@@ -31,7 +31,7 @@ parsed_application* get_current_selected_profile(HWND h_dlg, int id)
 	int name_len = ListBox_GetTextLen(profiles_lb_h_wnd, profile_idx);
 	const auto p_name = new wchar_t[name_len];
 	ListBox_GetText(profiles_lb_h_wnd, profile_idx, p_name);
-	const auto p = get_profile(p_name);
+	return get_profile(p_name);
 }
 
 /**
@@ -40,7 +40,7 @@ parsed_application* get_current_selected_profile(HWND h_dlg, int id)
  * \param id_item The id of the listbox
  * \return A pointer of the name in the listbox
  */
-wchar_t* get_selected_listbox_item(const HWND handle, const int id_item)
+wchar_t *get_selected_listbox_item(const HWND handle, const int id_item)
 {
 	const HWND h_wnd_list = GetDlgItem(handle, id_item);
 
@@ -58,11 +58,11 @@ wchar_t* get_selected_listbox_item(const HWND handle, const int id_item)
  * \param str Input string
  * \return A pointer to a wchar_t
  */
-wchar_t* string_to_wchar_ptr(std::string str)
+wchar_t *string_to_wchar_ptr(std::string str)
 {
 	const std::wstring tmp(str.begin(), str.end());
 	const size_t size = (tmp.size() + 1) * sizeof(wchar_t);
-	const auto ptr = static_cast<wchar_t*>(CoTaskMemAlloc(size));
+	const auto ptr = static_cast<wchar_t *>(CoTaskMemAlloc(size));
 	CopyMemory(ptr, tmp.c_str(), size);
 	return ptr;
 }
@@ -73,9 +73,9 @@ wchar_t* string_to_wchar_ptr(std::string str)
  * \param str The string to be added
  * \param idx The index to add the string in the listbox
  */
-void fill_listbox_with_string(const HWND handle, const std::string& str, const size_t idx)
+void fill_listbox_with_string(const HWND handle, const std::string &str)
 {
-	wchar_t* ptr = string_to_wchar_ptr(str);
+	wchar_t *ptr = string_to_wchar_ptr(str);
 
 	ListBox_AddString(handle, ptr);
 
@@ -88,7 +88,7 @@ void fill_listbox_with_string(const HWND handle, const std::string& str, const s
  * \param idx The index of the item to return
  * \return A pointer of the name in the listbox
  */
-wchar_t* get_listbox_item(const HWND handle, const LRESULT idx)
+wchar_t *get_listbox_item(const HWND handle, const LRESULT idx)
 {
 	const LRESULT len = ListBox_GetTextLen(handle, idx);
 	const auto buf = new wchar_t[len];
@@ -102,7 +102,7 @@ void fill_edit_with_string(const HWND handle, std::string str)
 	Edit_SetText(handle, tmp.c_str());
 }
 
-wchar_t* get_edit_text(const HWND handle, const UINT edit_id)
+wchar_t *get_edit_text(const HWND handle, const UINT edit_id)
 {
 	const int len = Edit_GetTextLength(GetDlgItem(handle, edit_id));
 	const auto txt = new wchar_t[len];

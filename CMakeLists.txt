@@ -44,10 +44,33 @@ set(ALL_FILES
 
 find_package(nlohmann_json CONFIG REQUIRED)
 add_executable(${PROJECT_NAME} WIN32 ${ALL_FILES})
-#target_compile_options(${PROJECT_NAME} PRIVATE /permissive- /sdl /W3)
-target_compile_definitions(${PROJECT_NAME} PRIVATE _DEBUG WIN32 _WINDOWS UNICODE _UNICODE)
-target_link_options(${PROJECT_NAME} PRIVATE /DEBUG /SUBSYSTEM:WINDOWS /ENTRY:wWinMainCRTStartup)
+target_compile_definitions(${PROJECT_NAME} PRIVATE 
+        "$<$<CONFIG:Debug>:"
+                "_DEBUG"
+        ">"
+        "$<$<CONFIG:Release>:"
+                "NDEBUG"
+        ">"
+        "WIN32;"
+        "_WINDOWS;"
+        "UNICODE;"
+        "_UNICODE")
+target_compile_options(${PROJECT_NAME} PRIVATE 
+        "$<$<CONFIG:Release>:"
+                "/Ois"
+                "/Gy"
+        ">"
+        "/permissive-;"
+        "/sdl;"
+        "/W4")
+target_link_options(${PROJECT_NAME} PRIVATE
+        "$<$<CONFIG:Release>:"
+                "/OPT:REF;"
+                "/OPT:ICF"
+        ">"
+        "/DEBUG;"
+        "/SUBSYSTEM:WINDOWS;"
+        "/ENTRY:wWinMainCRTStartup")
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
-#set_target_properties(${PROJECT_NAME} PROPERTIES VS_GLOBAL_KEYWORD "Win32Proj")
-#set_target_properties(${PROJECT_NAME} PROPERTIES INTERPROCEDURAL_OPTIMIZATION_RELEASE "true")
+set_target_properties(${PROJECT_NAME} PROPERTIES INTERPROCEDURAL_OPTIMIZATION_RELEASE "TRUE")
 target_sources(${PROJECT_NAME} PRIVATE src/ClipboardActions.manifest)
