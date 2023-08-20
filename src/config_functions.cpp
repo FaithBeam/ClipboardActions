@@ -2,9 +2,7 @@
 #include "config_functions.hpp"
 #include <iostream>
 #include "string_helpers.hpp"
-#pragma warning(push, 0)
 #include <nlohmann/json.hpp>
-#pragma warning(pop)
 
 using json = nlohmann::json;
 
