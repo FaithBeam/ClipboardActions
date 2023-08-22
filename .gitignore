@@ -13,6 +13,9 @@
 .idea/*
 .vscode/*
 
+build/*
+vcpkg_installed/*
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
