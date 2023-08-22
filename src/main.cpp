@@ -21,6 +21,7 @@
 #include "config_functions.hpp"
 #include "registry_functions.hpp"
 #include <filesystem>
+#include <tuple>
 
 #define MAX_LOADSTRING 100
 
@@ -445,6 +446,47 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				EndDialog(h_dlg, LOWORD(w_param));
 				return TRUE;
 			}
+		}
+
+		else if (wm_id == IDC_UPDATE_BUTTON)
+		{
+			wchar_t *edit_name, *edit_path, *edit_work_dir, *edit_args;
+			auto [p, sel_prof_idx] = get_current_selected_profile(h_dlg, IDC_PROFILE_LIST);
+
+			// get selected profile and edit text values
+			if (p == nullptr)
+			{
+				break;
+			}
+			if ((edit_name = get_edit_text(h_dlg, IDC_NAME_EDIT)) == nullptr)
+			{
+				break;
+			}
+			if ((edit_path = get_edit_text(h_dlg, IDC_PATH_EDIT)) == nullptr)
+			{
+				break;
+			}
+			if ((edit_work_dir = get_edit_text(h_dlg, IDC_WORK_DIR_EDIT)) == nullptr)
+			{
+				break;
+			}
+			if ((edit_args = get_edit_text(h_dlg, IDC_ARGS_EDIT)) == nullptr)
+			{
+				break;
+			}
+
+			// update profile with the current edit text values
+			p->app_name = std::wstring(edit_name);
+			p->app_path = std::wstring(edit_path);
+			p->cur_dir = std::wstring(edit_work_dir);
+			p->args = std::wstring(edit_args);
+
+			// Update the selected profile's string
+			ListBox_DeleteString(GetDlgItem(h_dlg, IDC_PROFILE_LIST), sel_prof_idx);
+			ListBox_InsertString(GetDlgItem(h_dlg, IDC_PROFILE_LIST), sel_prof_idx, edit_name);
+
+			// Enable saving
+			Button_Enable(GetDlgItem(h_dlg, IDC_SAVE_BUTTON), TRUE);
 		}
 
 		else if (wm_id == IDC_REMOVE_BUTTON)
