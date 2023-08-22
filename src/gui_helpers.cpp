@@ -20,7 +20,7 @@ parsed_application *get_profile(const wchar_t *wc_name)
 	return {};
 }
 
-parsed_application *get_current_selected_profile(HWND h_dlg, int id)
+std::tuple<parsed_application *, int> get_current_selected_profile(const HWND h_dlg, const int id)
 {
 	HWND profiles_lb_h_wnd = GetDlgItem(h_dlg, id);
 	int profile_idx = ListBox_GetCurSel(profiles_lb_h_wnd);
@@ -31,7 +31,7 @@ parsed_application *get_current_selected_profile(HWND h_dlg, int id)
 	int name_len = ListBox_GetTextLen(profiles_lb_h_wnd, profile_idx);
 	const auto p_name = new wchar_t[name_len];
 	ListBox_GetText(profiles_lb_h_wnd, profile_idx, p_name);
-	return get_profile(p_name);
+	return {get_profile(p_name), profile_idx};
 }
 
 /**
@@ -58,7 +58,7 @@ wchar_t *get_selected_listbox_item(const HWND handle, const int id_item)
  * \param str Input string
  * \return A pointer to a wchar_t
  */
-wchar_t *string_to_wchar_ptr(std::string str)
+wchar_t *string_to_wchar_ptr(const std::string str)
 {
 	const std::wstring tmp(str.begin(), str.end());
 	const size_t size = (tmp.size() + 1) * sizeof(wchar_t);
@@ -96,7 +96,7 @@ wchar_t *get_listbox_item(const HWND handle, const LRESULT idx)
 	return buf;
 }
 
-void fill_edit_with_string(const HWND handle, std::string str)
+void fill_edit_with_string(const HWND handle, const std::string str)
 {
 	const std::wstring tmp(str.begin(), str.end());
 	Edit_SetText(handle, tmp.c_str());
