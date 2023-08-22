@@ -10,6 +10,7 @@ env:
   BUILD_TYPE: Release
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
+  nlohmann_json_DIR: ${{ github.workspace }}/vcpkg_installed/x64-windows/share/nlohmann_json
 
 permissions:
   contents: write
