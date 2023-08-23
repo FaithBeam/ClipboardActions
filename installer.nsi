@@ -7,7 +7,7 @@
 
   ;Name and file
   Name "ClipboardActions"
-  OutFile "ClipboardActions (x64) Installer.exe"
+  OutFile "ClipboardActions.Installer.x64.exe"
   Unicode True
 
   ;Default installation folder
