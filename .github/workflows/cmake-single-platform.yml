@@ -54,11 +54,7 @@ jobs:
         run: ctest -C ${{env.BUILD_TYPE}}
 
       - name: Create Installer
-        run: makensis.exe ${{ github.workspace }}/installer.nsi
-
-      - name: Add Version to Installer
-        if: contains(github.ref, 'master')
-        run: mv ClipboardActions.Installer.x64.exe ClipboardActions.Installer.${{ steps.gitversion.outputs.semVer }}.x64.exe
+        run: makensis.exe /Dversion=${{ steps.gitversion.outputs.semVer }} ${{ github.workspace }}/installer.nsi
 
       - name: Upload Installer
         if: contains(github.ref, 'master')
