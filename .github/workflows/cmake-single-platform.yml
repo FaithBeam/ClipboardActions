@@ -26,11 +26,13 @@ jobs:
           fetch-depth: 0
 
       - name: Install GitVersion
+        if: contains(github.ref, 'master')
         uses: gittools/actions/gitversion/setup@v0
         with:
           versionSpec: "5.x"
 
       - name: Determine Version
+        if: contains(github.ref, 'master')
         id: gitversion # id to later be referenced
         uses: gittools/actions/gitversion/execute@v0
 
