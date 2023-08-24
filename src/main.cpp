@@ -509,37 +509,30 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 		{
 			if (wm_event == LBN_SELCHANGE)
 			{
-				const wchar_t *txt = get_selected_listbox_item(h_dlg, IDC_PROFILE_LIST);
-				if (txt == nullptr)
-				{
-					break;
-				}
-				const parsed_application *profile = get_profile(txt);
-				// aren't I supposed to delete this? Get heap exception here.
-				// delete[] txt;
+				auto [p, idx] = get_current_selected_profile(h_dlg, IDC_PROFILE_LIST);
 
 				// update text edits with profile information
-				Edit_SetText(GetDlgItem(h_dlg, IDC_NAME_EDIT), profile->app_name.c_str());
-				Edit_SetText(GetDlgItem(h_dlg, IDC_PATH_EDIT), profile->app_path.c_str());
-				Edit_SetText(GetDlgItem(h_dlg, IDC_WORK_DIR_EDIT), profile->cur_dir.c_str());
-				Edit_SetText(GetDlgItem(h_dlg, IDC_ARGS_EDIT), profile->args.c_str());
+				Edit_SetText(GetDlgItem(h_dlg, IDC_NAME_EDIT), p->app_name.c_str());
+				Edit_SetText(GetDlgItem(h_dlg, IDC_PATH_EDIT), p->app_path.c_str());
+				Edit_SetText(GetDlgItem(h_dlg, IDC_WORK_DIR_EDIT), p->cur_dir.c_str());
+				Edit_SetText(GetDlgItem(h_dlg, IDC_ARGS_EDIT), p->args.c_str());
 
-				Button_SetCheck(GetDlgItem(h_dlg, IDC_ENABLED_CHECK), profile->enabled);
+				Button_SetCheck(GetDlgItem(h_dlg, IDC_ENABLED_CHECK), p->enabled);
 
 				// reset regex listbox
 				const HWND rx_lb_h_wnd = GetDlgItem(h_dlg, IDC_REGEXES_LIST);
 				ListBox_ResetContent(rx_lb_h_wnd);
 
 				// fill regex listbox
-				for (size_t i = 0; i < profile->regex_patterns.size(); i++)
+				for (size_t i = 0; i < p->regex_patterns.size(); i++)
 				{
-					ListBox_AddString(rx_lb_h_wnd, profile->regex_patterns[i].c_str());
+					ListBox_AddString(rx_lb_h_wnd, p->regex_patterns[i].c_str());
 				}
 
 				// update full command edit
-				Edit_SetText(GetDlgItem(h_dlg, IDC_COMMAND_EDIT), profile->get_full_args().c_str());
+				Edit_SetText(GetDlgItem(h_dlg, IDC_COMMAND_EDIT), p->get_full_args().c_str());
 
-				// Button_SetCheck(GetDlgItem(h_dlg, IDC_APP_PATH_FIRST_CHECK), profile->include_app_path_in_args);
+				// Button_SetCheck(GetDlgItem(h_dlg, IDC_APP_PATH_FIRST_CHECK), p->include_app_path_in_args);
 			}
 		}
 
