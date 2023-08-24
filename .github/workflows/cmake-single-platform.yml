@@ -47,11 +47,11 @@ jobs:
         run: makensis.exe ${{ github.workspace }}/installer.nsi
 
       - name: Add Version to Installer
-        if: github.ref == 'refs/heads/master'
+        if: contains(github.ref, 'release')
         run: mv ClipboardActions.Installer.x64.exe ClipboardActions.Installer.${{github.ref_name}}.x64.exe
 
       - name: Upload Installer
-        if: github.ref == 'refs/heads/master'
+        if: contains(github.ref, 'release')
         uses: actions/upload-artifact@v3.1.0
         with:
           name: ClipboardActions.Installer.x64.exe
