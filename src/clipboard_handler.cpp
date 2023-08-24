@@ -16,7 +16,7 @@ void on_clipboard_change()
 		return;
 	}
 
-	const auto psz_text = static_cast<char*>(GlobalLock(h_data));
+	const auto psz_text = static_cast<char *>(GlobalLock(h_data));
 	if (psz_text == nullptr)
 	{
 		CloseClipboard();
@@ -35,9 +35,14 @@ void on_clipboard_change()
 void start_player(const std::wstring clipboard)
 {
 	std::wsmatch m;
-	for (const auto& parsed_app : parsed_apps)
+	for (const auto &parsed_app : parsed_apps)
 	{
-		for (auto& rx : parsed_app->regexes)
+		if (!parsed_app->enabled)
+		{
+			continue;
+		}
+
+		for (auto &rx : parsed_app->regexes)
 		{
 			std::regex_search(clipboard, m, rx);
 
@@ -58,19 +63,20 @@ void start_player(const std::wstring clipboard)
 				}
 
 				if (!CreateProcessW(
-					parsed_app->app_path.c_str(),
-					const_cast<LPWSTR>(sw),
-					nullptr,
-					nullptr,
-					FALSE,
-					0,
-					nullptr,
-					parsed_app->cur_dir.c_str(),
-					&si,
-					&pi))
+						parsed_app->app_path.c_str(),
+						const_cast<LPWSTR>(sw),
+						nullptr,
+						nullptr,
+						FALSE,
+						0,
+						nullptr,
+						parsed_app->cur_dir.c_str(),
+						&si,
+						&pi))
 				{
 					const auto le = GetLastError();
-					std::cout << "OUCH!\n" << le << std::endl;
+					std::cout << "OUCH!\n"
+							  << le << std::endl;
 				}
 
 				HANDLE phan;
@@ -85,7 +91,6 @@ void start_player(const std::wstring clipboard)
 				break;
 			}
 		}
-
 	}
 }
 

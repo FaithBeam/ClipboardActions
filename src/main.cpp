@@ -360,8 +360,7 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				const wchar_t *work_dir = get_edit_text(h_dlg, IDC_WORK_DIR_EDIT);
 				const wchar_t *args = get_edit_text(h_dlg, IDC_ARGS_EDIT);
 
-				const auto p = new parsed_application{
-					w_name, path, work_dir, args};
+				const auto p = new parsed_application{w_name, path, work_dir, args, true};
 
 				// get rx from regex listbox
 				const HWND h_wnd_rx_lb = GetDlgItem(h_dlg, IDC_REGEXES_LIST);

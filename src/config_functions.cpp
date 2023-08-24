@@ -27,6 +27,8 @@ void read_config()
 		p->app_path = utf8_decode(v["executablePath"]);
 		p->cur_dir = utf8_decode(v["workingDirectory"]);
 		p->args = utf8_decode(v["arguments"]);
+		p->enabled = v["enabled"];
+
 		p->include_app_path_in_args = v["includeAppPathInArgs"];
 
 		for (auto &[rk, rv] : v["regexes"].items())
@@ -54,6 +56,7 @@ void write_config(const std::vector<parsed_application *> &apps, bool notificati
 		a["executablePath"] = utf8_encode(app->app_path);
 		a["workingDirectory"] = utf8_encode(app->cur_dir);
 		a["arguments"] = utf8_encode(app->args);
+		a["enabled"] = app->enabled;
 		a["includeAppPathInArgs"] = app->include_app_path_in_args;
 		a["regexes"] = {};
 
