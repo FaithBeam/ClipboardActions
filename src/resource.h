@@ -34,12 +34,11 @@
 #define IDC_PATH_PICKER_BUTTON          1016
 #define IDC_WORK_DIR_PICKER_BUTTON      1017
 #define IDC_REGEX_UPDATE_BUTTON         1018
-#define IDC_EDIT1                       1019
 #define IDC_COMMAND_EDIT                1019
 #define IDM_NOTIFICATIONS               1020
-//#define IDC_APP_PATH_FIRST_CHECK        1020
 #define IDM_OPEN_APP_DIRECTORY          1021
 #define IDM_RUN_AT_STARTUP              1022
+#define IDC_ENABLED_CHECK               1023
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -49,7 +48,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        131
 #define _APS_NEXT_COMMAND_VALUE         32782
-#define _APS_NEXT_CONTROL_VALUE         1021
+#define _APS_NEXT_CONTROL_VALUE         1022
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

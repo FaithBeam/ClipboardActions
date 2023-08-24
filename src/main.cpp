@@ -524,6 +524,8 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				Edit_SetText(GetDlgItem(h_dlg, IDC_WORK_DIR_EDIT), profile->cur_dir.c_str());
 				Edit_SetText(GetDlgItem(h_dlg, IDC_ARGS_EDIT), profile->args.c_str());
 
+				Button_SetCheck(GetDlgItem(h_dlg, IDC_ENABLED_CHECK), profile->enabled);
+
 				// reset regex listbox
 				const HWND rx_lb_h_wnd = GetDlgItem(h_dlg, IDC_REGEXES_LIST);
 				ListBox_ResetContent(rx_lb_h_wnd);
@@ -538,6 +540,21 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				Edit_SetText(GetDlgItem(h_dlg, IDC_COMMAND_EDIT), profile->get_full_args().c_str());
 
 				// Button_SetCheck(GetDlgItem(h_dlg, IDC_APP_PATH_FIRST_CHECK), profile->include_app_path_in_args);
+			}
+		}
+
+		else if (wm_id == IDC_ENABLED_CHECK)
+		{
+			if (wm_event == BN_CLICKED)
+			{
+				auto check_status = Button_GetCheck(GetDlgItem(h_dlg, IDC_ENABLED_CHECK));
+				auto [p, idx] = get_current_selected_profile(h_dlg, IDC_PROFILE_LIST);
+				if (p == nullptr)
+				{
+					break;
+				}
+				p->enabled = check_status;
+				Button_Enable(GetDlgItem(h_dlg, IDC_SAVE_BUTTON), TRUE);
 			}
 		}
 
