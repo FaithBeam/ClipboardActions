@@ -37,6 +37,9 @@ jobs:
         id: gitversion # id to later be referenced
         uses: gittools/actions/gitversion/execute@v0
 
+      - name: Print vcpkg
+        run: ls $env:VCPKG_INSTALLATION_ROOT
+
       - name: Run vcpkg
         run: $($env:VCPKG_INSTALLATION_ROOT)/vcpkg install --triplet x64-windows
 
