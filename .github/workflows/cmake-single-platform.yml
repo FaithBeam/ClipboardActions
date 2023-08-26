@@ -23,7 +23,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          submodules: "recursive"
           fetch-depth: 0
 
       - name: Install GitVersion
@@ -36,9 +35,6 @@ jobs:
         if: contains(github.ref, 'master')
         id: gitversion # id to later be referenced
         uses: gittools/actions/gitversion/execute@v0
-
-      - name: Print env vars
-        run: gci env:* | sort-object name
 
       - name: Run vcpkg
         run: "& \"$($env:VCPKG_INSTALLATION_ROOT)\\vcpkg.exe\" install --triplet x64-windows"
