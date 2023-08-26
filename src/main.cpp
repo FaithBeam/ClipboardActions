@@ -501,6 +501,11 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 			{
 				auto [p, idx] = get_current_selected_profile(h_dlg, IDC_PROFILE_LIST);
 
+				if (p == nullptr)
+				{
+					break;
+				}
+
 				// update text edits with profile information
 				Edit_SetText(GetDlgItem(h_dlg, IDC_NAME_EDIT), p->app_name.c_str());
 				Edit_SetText(GetDlgItem(h_dlg, IDC_PATH_EDIT), p->app_path.c_str());
