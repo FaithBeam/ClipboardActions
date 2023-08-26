@@ -14,7 +14,8 @@ This is alpha software, so there will be bugs. Please create an issue.
 
 You can use regex groups 0-9 like so: {0}, {1}, {2}, etc.
 
-![Screenshot 2023-08-18 185246](https://github.com/FaithBeam/ClipboardActions/assets/32502411/869286ae-f2a1-4265-b6e6-c18200f4d465)
+![Screenshot 2023-08-26 125526](https://github.com/FaithBeam/ClipboardActions/assets/32502411/93a2e28b-54f9-41a1-b09e-0338744fdfdc)
+
 
 # Compiling
 
