@@ -55,3 +55,10 @@ jobs:
         with:
           name: ClipboardActions.Installer.${{ steps.gitversion.outputs.semVer }}.x64.exe
           path: ClipboardActions.Installer.${{ steps.gitversion.outputs.semVer }}.x64.exe
+
+      - name: Upload Portable
+        if: contains(github.ref, 'master')
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: ClipboardActions.Portable.${{ steps.gitversion.outputs.semVer }}.x64.exe
+          path: ${{github.workspace}}/build/Release/ClipboardActions.exe
