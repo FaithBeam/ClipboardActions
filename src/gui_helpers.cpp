@@ -5,11 +5,11 @@
  * \param wc_name The name of the profile to find
  * \return The profile
  */
-parsed_application *get_profile(const wchar_t *wc_name)
+Profile *get_profile(const wchar_t *wc_name)
 {
 	const std::wstring w_name(wc_name);
 
-	for (const auto i : parsed_apps)
+	for (const auto i : parsed_profiles)
 	{
 		if (i->app_name == w_name)
 		{
@@ -20,7 +20,7 @@ parsed_application *get_profile(const wchar_t *wc_name)
 	return {};
 }
 
-std::tuple<parsed_application *, int> get_current_selected_profile(const HWND h_dlg, const int id)
+std::tuple<Profile *, int> get_current_selected_profile(const HWND h_dlg, const int id)
 {
 	HWND profiles_lb_h_wnd = GetDlgItem(h_dlg, id);
 	int profile_idx = ListBox_GetCurSel(profiles_lb_h_wnd);

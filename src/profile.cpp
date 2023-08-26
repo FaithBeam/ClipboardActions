@@ -1,7 +1,7 @@
-#include "parsed_application.hpp"
+#include "profile.hpp"
 #include <format>
 
-std::wstring parsed_application::get_full_args() const
+std::wstring Profile::get_full_args() const
 {
 	if (this->include_app_path_in_args)
 	{
@@ -13,7 +13,7 @@ std::wstring parsed_application::get_full_args() const
 	}
 }
 
-std::wstring parsed_application::get_command(const std::wsmatch &match) const
+std::wstring Profile::get_command(const std::wsmatch &match) const
 {
 	std::wstring ret_val = this->get_full_args();
 	for (int i = 0; i < 10; i++)

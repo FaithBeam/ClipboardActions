@@ -1,4 +1,4 @@
-#include "parsed_apps.hpp"
+#include "shared_vars.hpp"
 #include "config_functions.hpp"
 #include <iostream>
 #include "string_helpers.hpp"
@@ -22,7 +22,7 @@ void read_config()
 
 	for (auto &[_, v] : data["applications"].items())
 	{
-		auto *p = new parsed_application();
+		auto *p = new Profile();
 		p->app_name = utf8_decode(v["appName"]);
 		p->app_path = utf8_decode(v["executablePath"]);
 		p->cur_dir = utf8_decode(v["workingDirectory"]);
@@ -37,11 +37,11 @@ void read_config()
 			p->regex_patterns.push_back(utf8_decode(rv));
 		}
 
-		parsed_apps.push_back(p);
+		parsed_profiles.push_back(p);
 	}
 }
 
-void write_config(const std::vector<parsed_application *> &apps, bool notifications_enabled, const std::wstring &dst)
+void write_config(const std::vector<Profile *> &apps, bool notifications_enabled, const std::wstring &dst)
 {
 	json j;
 

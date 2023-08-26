@@ -14,7 +14,7 @@
 
 #include "clipboard_handler.hpp"
 #include "gui_helpers.hpp"
-#include "parsed_apps.hpp"
+#include "shared_vars.hpp"
 #include "string_helpers.hpp"
 #include <commdlg.h>
 #include <shlobj_core.h>
@@ -316,9 +316,9 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 	case WM_INITDIALOG:
 	{
 		const HWND h_wnd_list = GetDlgItem(h_dlg, IDC_PROFILE_LIST);
-		for (size_t i = 0; i < parsed_apps.size(); i++)
+		for (size_t i = 0; i < parsed_profiles.size(); i++)
 		{
-			ListBox_AddString(h_wnd_list, parsed_apps.at(i)->app_name.c_str());
+			ListBox_AddString(h_wnd_list, parsed_profiles.at(i)->app_name.c_str());
 		}
 		SetFocus(h_wnd_list);
 		return TRUE;
@@ -343,9 +343,9 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				std::wstring w_name(name);
 
 				// if the to be added name exists in the parsed_apps, don't add it and return
-				auto is_name_same = [w_name](parsed_application *&p)
+				auto is_name_same = [w_name](Profile *&p)
 				{ return p->app_name == w_name; };
-				if (const auto it = std::ranges::find_if(parsed_apps, is_name_same); it != parsed_apps.end())
+				if (const auto it = std::ranges::find_if(parsed_profiles, is_name_same); it != parsed_profiles.end())
 				{
 					std::wstring wss = L"Profile " + w_name + L" already exists";
 					MessageBox(h_dlg, wss.c_str(), L"Error adding profile", MB_OK);
@@ -360,9 +360,9 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				const wchar_t *work_dir = get_edit_text(h_dlg, IDC_WORK_DIR_EDIT);
 				const wchar_t *args = get_edit_text(h_dlg, IDC_ARGS_EDIT);
 
-				const auto p = new parsed_application{w_name, path, work_dir, args, true};
+				const auto p = new Profile{w_name, path, work_dir, args, true};
 
-				parsed_apps.push_back(p);
+				parsed_profiles.push_back(p);
 
 				Button_Enable(GetDlgItem(h_dlg, IDC_SAVE_BUTTON), TRUE);
 			}
@@ -487,8 +487,8 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				if (const LRESULT idx = ListBox_GetCurSel(h_wnd_profiles_lb); idx > -1)
 				{
 					ListBox_DeleteString(h_wnd_profiles_lb, idx);
-					delete parsed_apps.at(idx);
-					parsed_apps.erase(parsed_apps.begin() + idx);
+					delete parsed_profiles.at(idx);
+					parsed_profiles.erase(parsed_profiles.begin() + idx);
 
 					Button_Enable(GetDlgItem(h_dlg, IDC_SAVE_BUTTON), TRUE);
 				}
@@ -723,7 +723,7 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 		{
 			if (wm_event == BN_CLICKED)
 			{
-				write_config(parsed_apps, notifications, get_config_path());
+				write_config(parsed_profiles, notifications, get_config_path());
 				Button_Enable(GetDlgItem(h_dlg, IDC_SAVE_BUTTON), FALSE);
 			}
 		}

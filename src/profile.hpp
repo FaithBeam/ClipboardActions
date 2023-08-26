@@ -3,8 +3,9 @@
 #include <Windows.h>
 #include <vector>
 #include <regex>
+#include <format>
 
-class parsed_application
+class Profile
 {
 public:
 	std::vector<std::wregex> regexes{};
@@ -16,9 +17,9 @@ public:
 	bool enabled = true;
 	bool include_app_path_in_args = true;
 
-	parsed_application() {}
+	Profile() {}
 
-	parsed_application(const std::wstring &app_name, std::wstring app_path, std::wstring cur_dir, std::wstring extra_args, bool enabled)
+	Profile(const std::wstring &app_name, std::wstring app_path, std::wstring cur_dir, std::wstring extra_args, bool enabled)
 	{
 		this->app_name = app_name;
 		this->app_path = app_path;

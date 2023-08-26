@@ -1,5 +1,5 @@
 #include "clipboard_handler.hpp"
-#include "parsed_apps.hpp"
+#include "shared_vars.hpp"
 #include "toast_handler.hpp"
 
 void on_clipboard_change()
@@ -35,7 +35,7 @@ void on_clipboard_change()
 void start_player(const std::wstring clipboard)
 {
 	std::wsmatch m;
-	for (const auto &parsed_app : parsed_apps)
+	for (const auto &parsed_app : parsed_profiles)
 	{
 		if (!parsed_app->enabled)
 		{
