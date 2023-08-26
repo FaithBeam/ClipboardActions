@@ -16,3 +16,19 @@ The only variable substitution at this point is {URL}
 
 ![Screenshot 2023-08-18 185246](https://github.com/FaithBeam/ClipboardActions/assets/32502411/869286ae-f2a1-4265-b6e6-c18200f4d465)
 
+# Compiling
+
+**Requirements**
+
+- cmake
+- vcpkg
+- msvc 2022 (From Visual Studio or the Build Tools)
+
+$VCPKG_INSTALLATION_ROOT is the path to your vcpkg installation
+
+```
+git clone https://github.com/FaithBeam/ClipboardActions
+cd ClipboardActions
+cmake -B build -S . "-DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
+cmake --build build --config Release
+```
