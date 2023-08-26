@@ -54,7 +54,7 @@ void start_player(const std::wstring clipboard)
 				si.cb = sizeof si;
 				ZeroMemory(&pi, sizeof pi);
 
-				std::wstring wargs = parsed_app->get_command(clipboard);
+				std::wstring wargs = parsed_app->get_command(m);
 				const LPCWSTR sw = wargs.c_str();
 
 				if (notifications)
