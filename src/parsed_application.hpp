@@ -29,5 +29,5 @@ public:
 
 	[[nodiscard]] std::wstring get_full_args() const;
 
-	[[nodiscard]] std::wstring get_command(const std::wstring &) const;
+	[[nodiscard]] std::wstring get_command(const std::wsmatch &) const;
 };

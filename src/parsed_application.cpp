@@ -1,4 +1,5 @@
 #include "parsed_application.hpp"
+#include <format>
 
 std::wstring parsed_application::get_full_args() const
 {
@@ -12,7 +13,21 @@ std::wstring parsed_application::get_full_args() const
 	}
 }
 
-std::wstring parsed_application::get_command(const std::wstring& clipboard) const
+std::wstring parsed_application::get_command(const std::wsmatch &match) const
 {
-	return std::regex_replace(this->get_full_args(), std::wregex(L"\\{URL\\}"), clipboard);
+	std::wstring ret_val = this->get_full_args();
+	for (int i = 0; i < 10; i++)
+	{
+		auto search_txt = std::format(L"{}", i);
+		search_txt = L"{" + search_txt + L"}";
+		auto rx_fmt = std::format(L"{}", i);
+		rx_fmt = L"\\{" + rx_fmt + L"\\}";
+		auto m_str = match[i].str();
+		if (ret_val.find(search_txt) != std::wstring::npos)
+		{
+			ret_val = std::regex_replace(ret_val, std::wregex(rx_fmt), m_str);
+		}
+	}
+
+	return ret_val;
 }
