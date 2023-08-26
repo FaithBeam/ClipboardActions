@@ -362,16 +362,6 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 
 				const auto p = new parsed_application{w_name, path, work_dir, args, true};
 
-				// get rx from regex listbox
-				const HWND h_wnd_rx_lb = GetDlgItem(h_dlg, IDC_REGEXES_LIST);
-				const LRESULT num_rx = ListBox_GetCount(h_wnd_rx_lb);
-				for (LRESULT i = 0; i < num_rx; i++)
-				{
-					const wchar_t *rx = get_listbox_item(h_wnd_rx_lb, i);
-					p->regexes.emplace_back(rx);
-					p->regex_patterns.push_back(rx);
-				}
-
 				parsed_apps.push_back(p);
 
 				Button_Enable(GetDlgItem(h_dlg, IDC_SAVE_BUTTON), TRUE);
