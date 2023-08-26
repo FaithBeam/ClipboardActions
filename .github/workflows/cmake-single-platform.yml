@@ -37,6 +37,9 @@ jobs:
         id: gitversion # id to later be referenced
         uses: gittools/actions/gitversion/execute@v0
 
+      - name: Print env vars
+        run: gci env:* | sort-object name
+
       - name: Run vcpkg
         run: $VCPKG_INSTALLATION_ROOT/vcpkg.exe install --triplet x64-windows
 
