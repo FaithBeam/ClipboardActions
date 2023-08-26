@@ -5,7 +5,7 @@ set(CMAKE_SYSTEM_VERSION 10.0)
 set(PROJECT_NAME ClipboardActions)
 if(DEFINED ENV{VCPKG_INSTALLATION_ROOT})
         STRING(REPLACE "\\" "/" VCPKG_INSTALLATION_ROOT $ENV{VCPKG_INSTALLATION_ROOT}) 
-        set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake)
+        set(CMAKE_TOOLCHAIN_FILE ${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake)
 endif()
 
 
