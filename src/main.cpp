@@ -501,8 +501,13 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 			{
 				auto [p, idx] = get_current_selected_profile(h_dlg, IDC_PROFILE_LIST);
 
+				// User clicked whitespace in the profile list
 				if (p == nullptr)
 				{
+					// Disable regex buttons
+					Button_Enable(GetDlgItem(h_dlg, IDC_REGEX_ADD_BUTTON), false);
+					Button_Enable(GetDlgItem(h_dlg, IDC_REGEX_REMOVE_BUTTON), false);
+					Button_Enable(GetDlgItem(h_dlg, IDC_REGEX_UPDATE_BUTTON), false);
 					break;
 				}
 
@@ -527,7 +532,10 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				// update full command edit
 				Edit_SetText(GetDlgItem(h_dlg, IDC_COMMAND_EDIT), p->get_full_args().c_str());
 
-				// Button_SetCheck(GetDlgItem(h_dlg, IDC_APP_PATH_FIRST_CHECK), p->include_app_path_in_args);
+				// enable regex buttons
+				Button_Enable(GetDlgItem(h_dlg, IDC_REGEX_ADD_BUTTON), true);
+				Button_Enable(GetDlgItem(h_dlg, IDC_REGEX_REMOVE_BUTTON), true);
+				Button_Enable(GetDlgItem(h_dlg, IDC_REGEX_UPDATE_BUTTON), true);
 			}
 		}
 
