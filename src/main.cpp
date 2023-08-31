@@ -504,6 +504,10 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				// User clicked whitespace in the profile list
 				if (p == nullptr)
 				{
+					// Disable profile update and remove buttons
+					Button_Enable(GetDlgItem(h_dlg, IDC_UPDATE_BUTTON), false);
+					Button_Enable(GetDlgItem(h_dlg, IDC_REMOVE_BUTTON), false);
+
 					// Disable regex buttons
 					Button_Enable(GetDlgItem(h_dlg, IDC_REGEX_ADD_BUTTON), false);
 					Button_Enable(GetDlgItem(h_dlg, IDC_REGEX_REMOVE_BUTTON), false);
@@ -531,6 +535,10 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 
 				// update full command edit
 				Edit_SetText(GetDlgItem(h_dlg, IDC_COMMAND_EDIT), p->get_full_args().c_str());
+
+				// enable profile update and remove buttons
+				Button_Enable(GetDlgItem(h_dlg, IDC_UPDATE_BUTTON), true);
+				Button_Enable(GetDlgItem(h_dlg, IDC_REMOVE_BUTTON), true);
 
 				// enable regex buttons
 				Button_Enable(GetDlgItem(h_dlg, IDC_REGEX_ADD_BUTTON), true);
