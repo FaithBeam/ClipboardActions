@@ -33,6 +33,8 @@ void read_config()
 			program->dir = utf8_decode(prog["dir"]);
 			program->args = utf8_decode(prog["args"]);
 			program->include_app_path_in_args = prog["includeAppPathInArgs"];
+
+			p->programs.emplace_back(program);
 		}
 
 		for (auto &[rk, rv] : v["regexes"].items())
