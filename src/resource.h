@@ -19,7 +19,7 @@
 #define IDR_MENU1                       130
 #define IDC_PROFILE_LIST                1000
 #define IDC_NAME_EDIT                   1001
-#define IDC_PATH_EDIT                   1002
+#define IDC_PROGRAM_PATH_EDIT           1002
 #define IDC_WORK_DIR_EDIT               1003
 #define IDC_ARGS_EDIT                   1004
 #define IDC_ADD_BUTTON                  1005
@@ -39,6 +39,10 @@
 #define IDM_OPEN_APP_DIRECTORY          1021
 #define IDM_RUN_AT_STARTUP              1022
 #define IDC_ENABLED_CHECK               1023
+#define IDC_PROGRAM_LIST                1024
+#define IDC_PROGRAM_ADD_BUTTON          1025
+#define IDC_PROGRAM_REMOVE_BUTTON       1026
+#define IDC_PROGRAM_UPDATE_BUTTON       1027
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -48,7 +52,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        131
 #define _APS_NEXT_COMMAND_VALUE         32782
-#define _APS_NEXT_CONTROL_VALUE         1022
+#define _APS_NEXT_CONTROL_VALUE         1028
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

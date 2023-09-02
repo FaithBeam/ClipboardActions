@@ -318,7 +318,7 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 		const HWND h_wnd_list = GetDlgItem(h_dlg, IDC_PROFILE_LIST);
 		for (size_t i = 0; i < parsed_profiles.size(); i++)
 		{
-			ListBox_AddString(h_wnd_list, parsed_profiles.at(i)->app_name.c_str());
+			ListBox_AddString(h_wnd_list, parsed_profiles.at(i)->name.c_str());
 		}
 		SetFocus(h_wnd_list);
 		return TRUE;
@@ -334,7 +334,7 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 		{
 			if (wm_event == BN_CLICKED)
 			{
-				// get text from edits
+				// get text from name edit
 				const wchar_t *name = get_edit_text(h_dlg, IDC_NAME_EDIT);
 				if (wcscmp(name, L"") == 0)
 				{
@@ -344,7 +344,7 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 
 				// if the to be added name exists in the parsed_apps, don't add it and return
 				auto is_name_same = [w_name](Profile *&p)
-				{ return p->app_name == w_name; };
+				{ return p->name == w_name; };
 				if (const auto it = std::ranges::find_if(parsed_profiles, is_name_same); it != parsed_profiles.end())
 				{
 					std::wstring wss = L"Profile " + w_name + L" already exists";
@@ -356,14 +356,13 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				const HWND h_wnd_profiles_lb = GetDlgItem(h_dlg, IDC_PROFILE_LIST);
 				ListBox_AddString(h_wnd_profiles_lb, name);
 
-				const wchar_t *path = get_edit_text(h_dlg, IDC_PATH_EDIT);
-				const wchar_t *work_dir = get_edit_text(h_dlg, IDC_WORK_DIR_EDIT);
-				const wchar_t *args = get_edit_text(h_dlg, IDC_ARGS_EDIT);
+				// create new profile
+				const auto p = new Profile{w_name, true};
 
-				const auto p = new Profile{w_name, path, work_dir, args, true};
-
+				// add new profile to global profiles vector
 				parsed_profiles.push_back(p);
 
+				// enable the save button
 				Button_Enable(GetDlgItem(h_dlg, IDC_SAVE_BUTTON), TRUE);
 			}
 		}
@@ -386,7 +385,7 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 			ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 			if (GetOpenFileName(&ofn) == TRUE)
 			{
-				HWND path_h_wnd = GetDlgItem(h_dlg, IDC_PATH_EDIT);
+				HWND path_h_wnd = GetDlgItem(h_dlg, IDC_PROGRAM_PATH_EDIT);
 				Edit_SetText(path_h_wnd, ofn.lpstrFile);
 
 				// add the parent directory if the work dir edit is empty
@@ -439,7 +438,6 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 
 		else if (wm_id == IDC_UPDATE_BUTTON)
 		{
-			wchar_t *edit_name, *edit_path, *edit_work_dir, *edit_args;
 			auto [p, sel_prof_idx] = get_current_selected_profile(h_dlg, IDC_PROFILE_LIST);
 
 			// get selected profile and edit text values
@@ -447,28 +445,15 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 			{
 				break;
 			}
+
+			wchar_t *edit_name;
 			if ((edit_name = get_edit_text(h_dlg, IDC_NAME_EDIT)) == nullptr)
-			{
-				break;
-			}
-			if ((edit_path = get_edit_text(h_dlg, IDC_PATH_EDIT)) == nullptr)
-			{
-				break;
-			}
-			if ((edit_work_dir = get_edit_text(h_dlg, IDC_WORK_DIR_EDIT)) == nullptr)
-			{
-				break;
-			}
-			if ((edit_args = get_edit_text(h_dlg, IDC_ARGS_EDIT)) == nullptr)
 			{
 				break;
 			}
 
 			// update profile with the current edit text values
-			p->app_name = std::wstring(edit_name);
-			p->app_path = std::wstring(edit_path);
-			p->cur_dir = std::wstring(edit_work_dir);
-			p->args = std::wstring(edit_args);
+			p->name = std::wstring(edit_name);
 
 			// Update the selected profile's string
 			ListBox_DeleteString(GetDlgItem(h_dlg, IDC_PROFILE_LIST), sel_prof_idx);
@@ -516,11 +501,9 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				}
 
 				// update text edits with profile information
-				Edit_SetText(GetDlgItem(h_dlg, IDC_NAME_EDIT), p->app_name.c_str());
-				Edit_SetText(GetDlgItem(h_dlg, IDC_PATH_EDIT), p->app_path.c_str());
-				Edit_SetText(GetDlgItem(h_dlg, IDC_WORK_DIR_EDIT), p->cur_dir.c_str());
-				Edit_SetText(GetDlgItem(h_dlg, IDC_ARGS_EDIT), p->args.c_str());
+				Edit_SetText(GetDlgItem(h_dlg, IDC_NAME_EDIT), p->name.c_str());
 
+				// set the enabled checkbox enalbed or not
 				Button_SetCheck(GetDlgItem(h_dlg, IDC_ENABLED_CHECK), p->enabled);
 
 				// reset regex listbox
@@ -533,8 +516,15 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 					ListBox_AddString(rx_lb_h_wnd, p->regex_patterns[i].c_str());
 				}
 
-				// update full command edit
-				Edit_SetText(GetDlgItem(h_dlg, IDC_COMMAND_EDIT), p->get_full_args().c_str());
+				// reset programs listbox
+				const HWND progs_lb_h_wnd = GetDlgItem(h_dlg, IDC_PROGRAM_LIST);
+				ListBox_ResetContent(progs_lb_h_wnd);
+
+				// fill programs listbox
+				for (size_t i = 0; i < p->programs.size(); i++)
+				{
+					ListBox_AddString(progs_lb_h_wnd, p->programs[i]->path.c_str());
+				}
 
 				// enable profile update and remove buttons
 				Button_Enable(GetDlgItem(h_dlg, IDC_UPDATE_BUTTON), true);
@@ -542,8 +532,23 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 
 				// enable regex buttons
 				Button_Enable(GetDlgItem(h_dlg, IDC_REGEX_ADD_BUTTON), true);
-				Button_Enable(GetDlgItem(h_dlg, IDC_REGEX_REMOVE_BUTTON), true);
-				Button_Enable(GetDlgItem(h_dlg, IDC_REGEX_UPDATE_BUTTON), true);
+				// Button_Enable(GetDlgItem(h_dlg, IDC_REGEX_REMOVE_BUTTON), true);
+
+				// enable regex edit
+				Edit_Enable(GetDlgItem(h_dlg, IDC_REGEX_EDIT), true);
+
+				// enable program add and remove buttons
+				Button_Enable(GetDlgItem(h_dlg, IDC_PROGRAM_ADD_BUTTON), true);
+				// Button_Enable(GetDlgItem(h_dlg, IDC_PROGRAM_REMOVE_BUTTON), true);
+
+				// enable browse pickers
+				Button_Enable(GetDlgItem(h_dlg, IDC_PATH_PICKER_BUTTON), true);
+				Button_Enable(GetDlgItem(h_dlg, IDC_WORK_DIR_PICKER_BUTTON), true);
+
+				// enable path, directory, and args edits
+				Edit_Enable(GetDlgItem(h_dlg, IDC_PROGRAM_PATH_EDIT), true);
+				Edit_Enable(GetDlgItem(h_dlg, IDC_WORK_DIR_EDIT), true);
+				Edit_Enable(GetDlgItem(h_dlg, IDC_ARGS_EDIT), true);
 			}
 		}
 
@@ -562,36 +567,11 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 			}
 		}
 
-		/*else if (wm_id == IDC_APP_PATH_FIRST_CHECK)
-		{
-			if (wm_event == BN_CLICKED)
-			{
-				auto check_status = Button_GetCheck(GetDlgItem(h_dlg, IDC_APP_PATH_FIRST_CHECK));
-				parsed_application* p = get_current_selected_profile(h_dlg, IDC_PROFILE_LIST);
-				if (p == nullptr)
-				{
-					break;
-				}
-				p->include_app_path_in_args = check_status;
-				Button_Enable(GetDlgItem(h_dlg, IDC_SAVE_BUTTON), TRUE);
-				Edit_SetText(GetDlgItem(h_dlg, IDC_COMMAND_EDIT), p->get_full_args().c_str());
-			}
-		}*/
-
 		else if (wm_id == IDC_REGEXES_LIST)
 		{
 			if (wm_event == LBN_SELCHANGE)
 			{
-				const HWND lb_rx_h_wnd = GetDlgItem(h_dlg, IDC_REGEXES_LIST);
-				const LRESULT idx = ListBox_GetCurSel(lb_rx_h_wnd);
-				const LRESULT len = ListBox_GetTextLen(lb_rx_h_wnd, idx);
-				if (len < 1)
-				{
-					break;
-				}
-				const auto txt = new wchar_t[len];
-				ListBox_GetText(lb_rx_h_wnd, idx, txt);
-
+				const auto txt = get_selected_listbox_item(h_dlg, IDC_REGEXES_LIST);
 				Edit_SetText(GetDlgItem(h_dlg, IDC_REGEX_EDIT), txt);
 			}
 		}
@@ -732,7 +712,165 @@ INT_PTR CALLBACK settings(const HWND h_dlg, const UINT message, const WPARAM w_p
 				}
 			}
 
+			// enable save button
 			Button_Enable(GetDlgItem(h_dlg, IDC_SAVE_BUTTON), TRUE);
+		}
+
+		else if (wm_id == IDC_PROGRAM_LIST)
+		{
+			if (wm_event == LBN_SELCHANGE)
+			{
+				// get currently selected profile
+				auto [p, idx] = get_current_selected_profile(h_dlg, IDC_PROFILE_LIST);
+				if (p == nullptr)
+				{
+					break;
+				}
+
+				// get selected program path
+				const auto txt = get_selected_listbox_item(h_dlg, IDC_PROGRAM_LIST);
+
+				// user clicked whitespace in program list, skip
+				if (txt == nullptr)
+				{
+					break;
+				}
+
+				// find program in profile's programs vector
+				for (const auto prog : p->programs)
+				{
+					// skip programs that do not match paths
+					if (wcscmp(prog->path.c_str(), txt) != 0)
+					{
+						continue;
+					}
+
+					// set path, directory, and args edits
+					Edit_SetText(GetDlgItem(h_dlg, IDC_PROGRAM_PATH_EDIT), txt);
+					Edit_SetText(GetDlgItem(h_dlg, IDC_WORK_DIR_EDIT), prog->dir.c_str());
+					Edit_SetText(GetDlgItem(h_dlg, IDC_ARGS_EDIT), prog->args.c_str());
+
+					// enable remove and update buttons
+					Button_Enable(GetDlgItem(h_dlg, IDC_PROGRAM_REMOVE_BUTTON), true);
+					Button_Enable(GetDlgItem(h_dlg, IDC_PROGRAM_UPDATE_BUTTON), true);
+				}
+			}
+		}
+
+		else if (wm_id == IDC_PROGRAM_ADD_BUTTON)
+		{
+			if (wm_event == BN_CLICKED)
+			{
+				// get currently selected profile
+				auto [p, idx] = get_current_selected_profile(h_dlg, IDC_PROFILE_LIST);
+
+				// break if profile not found
+				if (p == nullptr)
+				{
+					break;
+				}
+
+				// get path, work dir, and args edit text
+				const wchar_t *path = get_edit_text(h_dlg, IDC_PROGRAM_PATH_EDIT);
+				const wchar_t *work_dir = get_edit_text(h_dlg, IDC_WORK_DIR_EDIT);
+				const wchar_t *args = get_edit_text(h_dlg, IDC_ARGS_EDIT);
+
+				// add the path to programs listbox
+				const HWND h_wnd_program_lb = GetDlgItem(h_dlg, IDC_PROGRAM_LIST);
+				ListBox_AddString(h_wnd_program_lb, path);
+
+				// create and add a new program to the profile's programs vector
+				p->programs.emplace_back(new Program{path, work_dir, args});
+
+				// enable save button
+				Button_Enable(GetDlgItem(h_dlg, IDC_SAVE_BUTTON), TRUE);
+			}
+		}
+
+		else if (wm_id == IDC_PROGRAM_REMOVE_BUTTON)
+		{
+			// get currently selected profile
+			auto [p, _] = get_current_selected_profile(h_dlg, IDC_PROFILE_LIST);
+
+			// break if profile not found
+			if (p == nullptr)
+			{
+				break;
+			}
+
+			HWND h_wnd_program_lb = GetDlgItem(h_dlg, IDC_PROGRAM_LIST);
+
+			// delete the string from the program listbox
+			if (const LRESULT idx = ListBox_GetCurSel(h_wnd_program_lb); idx > -1)
+			{
+				ListBox_DeleteString(h_wnd_program_lb, idx);
+			}
+
+			const wchar_t *path = get_edit_text(h_dlg, IDC_PROGRAM_PATH_EDIT);
+			std::wstring w_path(path);
+
+			// delete the program from the currently selected profile
+			for (size_t i = 0; i < p->programs.size(); i++)
+			{
+				if (p->programs[i]->path != w_path)
+				{
+					continue;
+				}
+
+				delete p->programs.at(i);
+				p->programs.erase(p->programs.begin() + i);
+			}
+
+			// enable save button
+			Button_Enable(GetDlgItem(h_dlg, IDC_SAVE_BUTTON), TRUE);
+		}
+
+		else if (wm_id == IDC_PROGRAM_UPDATE_BUTTON)
+		{
+			auto [p, p_idx] = get_current_selected_profile(h_dlg, IDC_PROFILE_LIST);
+			if (p == nullptr)
+			{
+				break;
+			}
+
+			wchar_t *path, *dir, *args;
+			if ((path = get_edit_text(h_dlg, IDC_PROGRAM_PATH_EDIT)) == nullptr)
+			{
+				break;
+			}
+			if ((dir = get_edit_text(h_dlg, IDC_WORK_DIR_EDIT)) == nullptr)
+			{
+				break;
+			}
+			if ((args = get_edit_text(h_dlg, IDC_ARGS_EDIT)) == nullptr)
+			{
+				break;
+			}
+
+			for (size_t i = 0; i < p->programs.size(); i++)
+			{
+				if (wcscmp(p->programs[i]->path.c_str(), path))
+				{
+					continue;
+				}
+
+				const auto h_wnd_program_lb = GetDlgItem(h_dlg, IDC_PROGRAM_LIST);
+				const auto cur_prog_idx = ListBox_GetCurSel(h_wnd_program_lb);
+
+				// update program listbox with new path at current selection
+				ListBox_DeleteString(h_wnd_program_lb, cur_prog_idx);
+				ListBox_InsertString(h_wnd_program_lb, cur_prog_idx, path);
+
+				// update program with new values
+				p->programs[i]->path = std::wstring(path);
+				p->programs[i]->dir = std::wstring(dir);
+				p->programs[i]->args = std::wstring(args);
+
+				// enable save button
+				Button_Enable(GetDlgItem(h_dlg, IDC_SAVE_BUTTON), TRUE);
+
+				break;
+			}
 		}
 
 		else if (wm_id == IDC_SAVE_BUTTON)

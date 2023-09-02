@@ -54,39 +54,42 @@ void start_player(const std::wstring clipboard)
 				si.cb = sizeof si;
 				ZeroMemory(&pi, sizeof pi);
 
-				std::wstring wargs = parsed_app->get_command(m);
-				const LPCWSTR sw = wargs.c_str();
-
-				if (notifications)
+				for (auto program : parsed_app->programs)
 				{
-					raise_info_toast(wargs);
-				}
+					std::wstring wargs = program->get_command(m);
+					const LPCWSTR sw = wargs.c_str();
 
-				if (!CreateProcessW(
-						parsed_app->app_path.c_str(),
-						const_cast<LPWSTR>(sw),
-						nullptr,
-						nullptr,
-						FALSE,
-						0,
-						nullptr,
-						parsed_app->cur_dir.c_str(),
-						&si,
-						&pi))
-				{
-					const auto le = GetLastError();
-					std::cout << "OUCH!\n"
-							  << le << std::endl;
-				}
+					if (notifications)
+					{
+						raise_info_toast(wargs);
+					}
 
-				HANDLE phan;
-				if (!RegisterWaitForSingleObject(&phan, pi.hProcess, wait_or_timer_callback, nullptr, INFINITE, WT_EXECUTEONLYONCE))
-				{
-					std::cout << "OH NO!" << std::endl;
-				}
+					if (!CreateProcessW(
+							program->path.c_str(),
+							const_cast<LPWSTR>(sw),
+							nullptr,
+							nullptr,
+							FALSE,
+							0,
+							nullptr,
+							program->dir.c_str(),
+							&si,
+							&pi))
+					{
+						const auto le = GetLastError();
+						std::cout << "OUCH!\n"
+								  << le << std::endl;
+					}
 
-				CloseHandle(pi.hProcess);
-				CloseHandle(pi.hThread);
+					HANDLE phan;
+					if (!RegisterWaitForSingleObject(&phan, pi.hProcess, wait_or_timer_callback, nullptr, INFINITE, WT_EXECUTEONLYONCE))
+					{
+						std::cout << "OH NO!" << std::endl;
+					}
+
+					CloseHandle(pi.hProcess);
+					CloseHandle(pi.hThread);
+				}
 
 				break;
 			}

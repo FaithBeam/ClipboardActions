@@ -11,7 +11,7 @@ Profile *get_profile(const wchar_t *wc_name)
 
 	for (const auto i : parsed_profiles)
 	{
-		if (i->app_name == w_name)
+		if (i->name == w_name)
 		{
 			return i;
 		}
@@ -20,6 +20,10 @@ Profile *get_profile(const wchar_t *wc_name)
 	return {};
 }
 
+/// @brief Get the profile from the currently selected listbox
+/// @param h_dlg
+/// @param id
+/// @return
 std::tuple<Profile *, int> get_current_selected_profile(const HWND h_dlg, const int id)
 {
 	HWND profiles_lb_h_wnd = GetDlgItem(h_dlg, id);
@@ -53,36 +57,6 @@ wchar_t *get_selected_listbox_item(const HWND handle, const int id_item)
 }
 
 /**
- * \brief Helper function to turn a string to a wchar_t pointer.
- * You MUST call CoTaskMemFree on the returned pointer once done using it.
- * \param str Input string
- * \return A pointer to a wchar_t
- */
-wchar_t *string_to_wchar_ptr(const std::string str)
-{
-	const std::wstring tmp(str.begin(), str.end());
-	const size_t size = (tmp.size() + 1) * sizeof(wchar_t);
-	const auto ptr = static_cast<wchar_t *>(CoTaskMemAlloc(size));
-	CopyMemory(ptr, tmp.c_str(), size);
-	return ptr;
-}
-
-/**
- * \brief Adds a string to a listbox
- * \param handle Handle to the listbox
- * \param str The string to be added
- * \param idx The index to add the string in the listbox
- */
-void fill_listbox_with_string(const HWND handle, const std::string &str)
-{
-	wchar_t *ptr = string_to_wchar_ptr(str);
-
-	ListBox_AddString(handle, ptr);
-
-	CoTaskMemFree(ptr);
-}
-
-/**
  * \brief Get the text of a listbox item
  * \param handle The handle to the listbox
  * \param idx The index of the item to return
@@ -94,12 +68,6 @@ wchar_t *get_listbox_item(const HWND handle, const LRESULT idx)
 	const auto buf = new wchar_t[len];
 	ListBox_GetText(handle, idx, buf);
 	return buf;
-}
-
-void fill_edit_with_string(const HWND handle, const std::string str)
-{
-	const std::wstring tmp(str.begin(), str.end());
-	Edit_SetText(handle, tmp.c_str());
 }
 
 wchar_t *get_edit_text(const HWND handle, const UINT edit_id)

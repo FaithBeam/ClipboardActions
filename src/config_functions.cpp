@@ -20,16 +20,20 @@ void read_config()
 
 	notifications = data["notifications"];
 
-	for (auto &[_, v] : data["applications"].items())
+	for (auto &[_, v] : data["profiles"].items())
 	{
 		auto *p = new Profile();
-		p->app_name = utf8_decode(v["appName"]);
-		p->app_path = utf8_decode(v["executablePath"]);
-		p->cur_dir = utf8_decode(v["workingDirectory"]);
-		p->args = utf8_decode(v["arguments"]);
+		p->name = utf8_decode(v["name"]);
 		p->enabled = v["enabled"];
 
-		p->include_app_path_in_args = v["includeAppPathInArgs"];
+		for (auto &[_, prog] : v["programs"].items())
+		{
+			auto *program = new Program();
+			program->path = utf8_decode(prog["path"]);
+			program->dir = utf8_decode(prog["dir"]);
+			program->args = utf8_decode(prog["args"]);
+			program->include_app_path_in_args = prog["includeAppPathInArgs"];
+		}
 
 		for (auto &[rk, rv] : v["regexes"].items())
 		{
@@ -41,35 +45,42 @@ void read_config()
 	}
 }
 
-void write_config(const std::vector<Profile *> &apps, bool notifications_enabled, const std::wstring &dst)
+void write_config(const std::vector<Profile *> &profiles, bool notifications_enabled, const std::wstring &dst)
 {
-	json j;
+	json j_config = {
+		{"notifications", notifications_enabled},
+		{"profiles", nullptr}};
 
-	j["notifications"] = notifications_enabled;
-	j["applications"] = {};
-
-	for (const auto app : apps)
+	for (const auto &profile : profiles)
 	{
-		json a;
+		json j_prof = {
+			{"name", utf8_encode(profile->name)},
+			{"enabled", profile->enabled},
+			{"programs", nullptr}};
 
-		a["appName"] = utf8_encode(app->app_name);
-		a["executablePath"] = utf8_encode(app->app_path);
-		a["workingDirectory"] = utf8_encode(app->cur_dir);
-		a["arguments"] = utf8_encode(app->args);
-		a["enabled"] = app->enabled;
-		a["includeAppPathInArgs"] = app->include_app_path_in_args;
-		a["regexes"] = {};
-
-		for (const auto &rx : app->regex_patterns)
+		for (const auto &program : profile->programs)
 		{
-			a["regexes"].emplace_back(utf8_encode(rx));
+			json j_prog = {
+				{"path", utf8_encode(program->path)},
+				{"dir", utf8_encode(program->dir)},
+				{"args", utf8_encode(program->args)},
+				{"includeAppPathInArgs", program->include_app_path_in_args}};
+
+			j_prof["programs"].emplace_back(j_prog);
 		}
 
-		j["applications"].emplace_back(a);
+		j_prof["regexes"] = {};
+
+		for (const auto &rx : profile->regex_patterns)
+		{
+			j_prof["regexes"].emplace_back(utf8_encode(rx));
+		}
+
+		j_config["profiles"].emplace_back(j_prof);
 	}
 
 	std::ofstream o(dst);
-	o << std::setw(4) << j << std::endl;
+	o << std::setw(4) << j_config << std::endl;
 }
 
 void update_notification(bool notifications_enabled, const std::wstring &dst)
